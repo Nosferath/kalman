@@ -1,33 +1,81 @@
 """ax ay az gx gy gz temp"""
 
-import bluetooth
-
+import serial
+import io
+import numpy as np
+from matplotlib import pyplot as plt
+from matplotlib import animation as animation
 
 class DataGetTxt:
     def __init__(self, args):
         pass
     
-class DataGetBt:
+class DataGetSerial:
     def __init__(self, args=0):
         self.set_up(args)
         
     def set_up(self, args):
-        port = 1
-        print("Buscando dispositivos Bluetooth...")
-        nearby_devices = bluetooth.discover_devices()
-        num = 0
-        print("Ingresa el numero del dispositivo a conectar:")
-        for dev in nearby_devices:
-            num += 1
-            print(str(num), ": ", bluetooth.lookup_name(dev))
-        selection = input("> ") - 1
-        print("Has seleccionado", bluetooth.lookup_name(
-                nearby_devices[selection]))
-        selection = nearby_devices[selection]
-        self.socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-        self.socket.connect((selection, port))
+        port = 'COM23'
+        print "Conectando a puerto serial %s..."%(port)
+        self.serial = serial.Serial(port, 9600, timeout=0.01)
+        self.sio = io.TextIOWrapper(io.BufferedRWPair(self.serial, self.serial))
+        print "Conectado!"
         
+    def loop_next(self):
+        try:
+            while True: 
+                s = self.sio.readline().split('\t')
+                print s
+        except KeyboardInterrupt:
+            self.serial.close()
+            
     def get_next(self):
-        pass
+        s = self.sio.readline().split('\t')
+        return s[1]
+    
+    def close(self):
+        self.sio.close()
+        self.serial.close()
 
-getter = DataGetBt()
+class LivePlotter:
+    def __init__(self, n, dt):
+        self.n = n  # Datos maximos a almacenar en x e y
+        self.dt = dt
+        self.t = [0]*self.n
+        self.y = [0]*self.n
+        self.fig, self.ax = plt.subplots()
+        self.line, = self.ax.plot(np.random.rand(10))
+        self.ax.set_ylim(-180, 180)        
+        self.dgs = DataGetSerial()
+    
+    def add_y(self, y):
+        del self.y[0]
+        del self.t[0]
+        self.t.append(self.t[-1] + self.dt)
+        self.y.append(y)
+        
+    def update(self, data):
+        """No usado?"""
+        self.line.set_ydata(data)
+        return self.line,
+    
+    def run(self, y):
+        self.add_y(y)
+        self.line.set_data(self.t, self.y)
+        return self.line,
+        
+    def data_gen(self):
+        print "Generando"
+        while True:
+            try:
+                y = self.dgs.get_next()
+            except:
+                y = 0
+            yield y
+                
+if __name__ == "__main__":
+    plotter = LivePlotter(1000, 0.01)
+    ani = animation.FuncAnimation(plotter.fig, plotter.run, plotter.data_gen,
+                                  interval=0, blit=True)
+    while True:
+        plt.show()
