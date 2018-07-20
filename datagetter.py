@@ -11,27 +11,29 @@ class DataGetTxt:
         pass
     
 class DataGetSerial:
-    def __init__(self, args=0):
-        self.set_up(args)
+    def __init__(self, port='COM24', n=3):
+        self.set_up(port, n)
         
-    def set_up(self, args):
-        port = 'COM23'
-        print "Conectando a puerto serial %s..."%(port)
+    def set_up(self, port, n):
+        self.n = n
+        print("Conectando a puerto serial %s..."%(port))
         self.serial = serial.Serial(port, 9600, timeout=0.01)
         self.sio = io.TextIOWrapper(io.BufferedRWPair(self.serial, self.serial))
-        print "Conectado!"
+        print("Conectado!")
         
     def loop_next(self):
         try:
             while True: 
                 s = self.sio.readline().split('\t')
-                print s
+                print(s)
         except KeyboardInterrupt:
             self.serial.close()
             
     def get_next(self):
         s = self.sio.readline().split('\t')
-        return s[1]
+        if len(s) == 1:
+            return [0]*(self.n)
+        return s
     
     def close(self):
         self.sio.close()
@@ -65,7 +67,6 @@ class LivePlotter:
         return self.line,
         
     def data_gen(self):
-        print "Generando"
         while True:
             try:
                 y = self.dgs.get_next()
@@ -74,6 +75,7 @@ class LivePlotter:
             yield y
                 
 if __name__ == "__main__":
+    plt.ion()
     plotter = LivePlotter(1000, 0.01)
     ani = animation.FuncAnimation(plotter.fig, plotter.run, plotter.data_gen,
                                   interval=0, blit=True)
