@@ -42,7 +42,7 @@ void setup(){
 
   while (i2cRead(0x75, i2cData, 1));
   if (i2cData[0] != 0x68) { // Read "WHO_AM_I" register
-    Serial.print(F("Error reading sensor"));
+    Serial.write(F("Error reading sensor"));
     while (1);
   }
 
@@ -76,13 +76,13 @@ void setup(){
 
    bitSet(DDRD,ALARM_PIN);  //pinMode(4,OUTPUT);
    bitClear(DDRD,STATE_PIN);//pinMode(7,INPUT)
-   Serial.println("wait for the first connect");
+   Serial.writeln("wait for the first connect");
    /*while(1){
      state = digitalRead(STATE_PIN);
      if(state == HIGH)
        break;
    }
-   Serial.println("connect over");*/
+   Serial.writeln("connect over");*/
 }
 void loop()
 {/* Update all the values */
@@ -165,55 +165,55 @@ void loop()
 
   /* Print Data */
 #if 0 // Set to 1 to activate
-  Serial.print(accX); Serial.print("\t");
-  Serial.print(accY); Serial.print("\t");
-  Serial.print(accZ); Serial.print("\t");
+  Serial.write(accX); Serial.write("\t");
+  Serial.write(accY); Serial.write("\t");
+  Serial.write(accZ); Serial.write("\t");
 
-  Serial.print(gyroX); Serial.print("\t");
-  Serial.print(gyroY); Serial.print("\t");
-  Serial.print(gyroZ); Serial.print("\t");
+  Serial.write(gyroX); Serial.write("\t");
+  Serial.write(gyroY); Serial.write("\t");
+  Serial.write(gyroZ); Serial.write("\t");
 
-  Serial.print("\t");
+  Serial.write("\t");
 #endif
 
 #if 0 // Set to 1 to print the temperature
-  Serial.print("\t");
+  Serial.write("\t");
 
   double temperature = (double)tempRaw / 340.0 + 36.53;
-  Serial.print(temperature); Serial.print("\t");
+  Serial.write(temperature); Serial.write("\t");
 #endif
 
-  Serial.print("\r\n");
+  Serial.write("\r\n");
   delay(2);
 
   state = digitalRead(STATE_PIN);
   if (1) //(state == LOW) 
-      Serial.print("a/g:\t");
-        //Serial.print(yaw); Serial.print("\t");
-        //Serial.print(pitch); Serial.print("\t");
-        //Serial.print(roll); Serial.print("\t");
+      Serial.write("a/g:\t");
+        //Serial.write(yaw); Serial.write("\t");
+        //Serial.write(pitch); Serial.write("\t");
+        //Serial.write(roll); Serial.write("\t");
 
-        Serial.print(gyroXrate); Serial.print("\t");
-        Serial.print(gyroYrate); Serial.print("\t");
-        Serial.print(gyroZrate); Serial.print("\t");
-        //Serial.print(kalmanZ.getRate() * dt); Serial.print("\t");
+        Serial.write(gyroXrate); Serial.write("\t");
+        Serial.write(gyroYrate); Serial.write("\t");
+        Serial.write(gyroZrate); Serial.write("\t");
+        //Serial.write(kalmanZ.getRate() * dt); Serial.write("\t");
         
         //double temperature = (double)tempRaw / 340.0 + 36.53;
-        //Serial.print(temperature); Serial.print("\t");
-        //Serial.print(dt); Serial.print("\t");
-        //Serial.print(gyroXangle); Serial.print("\t");
-        //Serial.print(compAngleX); Serial.print("\t");
-        //Serial.print(kalAngleX); Serial.print("\t");
+        //Serial.write(temperature); Serial.write("\t");
+        //Serial.write(dt); Serial.write("\t");
+        //Serial.write(gyroXangle); Serial.write("\t");
+        //Serial.write(compAngleX); Serial.write("\t");
+        //Serial.write(kalAngleX); Serial.write("\t");
 
-        //Serial.print("\t");
+        //Serial.write("\t");
   
 
-        //Serial.print(gyroYangle); Serial.print("\t");
-         //Serial.print(compAngleY); Serial.print("\t");
-          //Serial.print(kalAngleY); Serial.print("\t");
-      //Serial.print(accX); Serial.print("\t");
-      //Serial.print(accY); Serial.print("\t");
-      //Serial.print(accZ); Serial.print("\t");
+        //Serial.write(gyroYangle); Serial.write("\t");
+         //Serial.write(compAngleY); Serial.write("\t");
+          //Serial.write(kalAngleY); Serial.write("\t");
+      //Serial.write(accX); Serial.write("\t");
+      //Serial.write(accY); Serial.write("\t");
+      //Serial.write(accZ); Serial.write("\t");
 
       
 }

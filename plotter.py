@@ -21,24 +21,29 @@ def init_list_of_objects(size):
         list_of_objects.append( list() ) #different object reference each time
     return list_of_objects
 
-n = 3
-dgs = DataGetSerial('COM25', n)
+n = 5
+dgs = DataGetSerial('COM5', n)
 plt.ion()
 y = init_list_of_objects(n)
-t = []
-dt = 0.01
+#t = []
+#dt = 0.01
 cnt = 0
 def MakeFig():
-    plt.ylim(np.amin(y)-2, np.amax(y)+2)
+    plt.ylim(np.amin(y[1:])-2, np.amax(y[1:])+2)
+    plt.xlim(min(y[0]), max(y[0]))
     plt.title("Grafico en tiempo real de salida Arduino")
     plt.grid(True)
+    plt.xlabel("Tiempo [segs]")
     plt.ylabel("Salida giroscopio [grados/s]")
-    plt.plot(t, y[0], 'r', t, y[1], 'g', t, y[2], 'b')#, label="Velocidad angular")
-    #plt.legend(loc='upper left')
+    nplot = 1; plt.plot(y[0], y[nplot], 'r', label="Velocidad angular X")
+    nplot +=1; plt.plot(y[0], y[nplot], 'g', label="Velocidad angular Y")
+    nplot +=1; plt.plot(y[0], y[nplot], 'b', label="Velocidad angular X, Kalman")
+    nplot +=1; plt.plot(y[0], y[nplot], 'y', label="Velocidad angular Y, Kalman")
+    plt.legend(loc='upper left')
 
 with open("data.csv", 'w', newline='') as csvfile:
     csvwriter = csv.writer(csvfile)
-    csvwriter.writerow(['ax', 'ay', 'az'])
+    csvwriter.writerow(['Tiempo', 'GiroX', 'GiroY', 'KalmanGiroX', 'KalmanGiroY'])
     while True:
         reading = dgs.get_next()
         print("THIS IS", reading)
@@ -58,13 +63,13 @@ with open("data.csv", 'w', newline='') as csvfile:
             continue
             #for i in range(n):
             #    y[i].append(0)
-        if len(t) == 0: t.append(0)
-        else: t.append(t[-1] + dt)
-        if cnt%6 == 0:
+        #if len(t) == 0: t.append(0)
+        #else: t.append(t[-1] + dt)
+        if cnt%2== 0:
             drawnow(MakeFig)
-            plt.pause(.000001)
-        if cnt > 100:
-            t.pop(0)
+            #plt.pause(.000001)
+        if cnt > 200:
+            #t.pop(0)
             for i in range(n):
                 y[i].pop(0)
         cnt += 1
