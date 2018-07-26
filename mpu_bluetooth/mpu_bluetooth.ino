@@ -1,14 +1,15 @@
-
 #include <Wire.h>
+#include <SendOnlySoftwareSerial.h>
 #include <Kalman.h> // Source: https://github.com/TKJElectronics/KalmanFilter
 
-#define RESTRICT_PITCH // Comment out to restrict roll to ±90deg instead - please read: http://www.freescale.com/files/sensors/doc/app_note/AN3461.pdf
-#define STATE_PIN 2    //引脚的宏定义
-#define ALARM_PIN 7 
+//#define RESTRICT_PITCH // Comment out to restrict roll to ±90deg instead - please read: http://www.freescale.com/files/sensors/doc/app_note/AN3461.pdf
+
+SendOnlySoftwareSerial mySerial (1);  // Tx pin
 
 Kalman kalmanX; // Create the Kalman instances
 Kalman kalmanY;
 Kalman kalmanZ;
+
 
 /* IMU Data */
 double accX, accY, accZ;
@@ -17,15 +18,15 @@ int16_t tempRaw;
 
 double gyroXangle, gyroYangle; // Angle calculate using the gyro only
 double compAngleX, compAngleY; // Calculated angle using a complementary filter
-double kalAngleX, kalAngleY, kalAngleZ; // Calculated angle using a Kalman filter
+double kalAngleX, kalAngleY; // Calculated angle using a Kalman filter
 
 uint32_t timer;
 uint8_t i2cData[14]; // Buffer for I2C data
 int state;
+
 // TODO: Make calibration routine
-void alarm(void);
 void setup(){  
-   Serial.begin(9600);  //设置串口的波特率，用于调试
+   mySerial.begin(9600);
    Wire.begin();
 #if ARDUINO >= 157
   Wire.setClock(400000UL); // Set I2C frequency to 400kHz
@@ -42,7 +43,7 @@ void setup(){
 
   while (i2cRead(0x75, i2cData, 1));
   if (i2cData[0] != 0x68) { // Read "WHO_AM_I" register
-    Serial.write(F("Error reading sensor"));
+    Serial.print(F("Error reading sensor"));
     while (1);
   }
 
@@ -74,15 +75,9 @@ void setup(){
 
   timer = micros();
 
-   bitSet(DDRD,ALARM_PIN);  //pinMode(4,OUTPUT);
-   bitClear(DDRD,STATE_PIN);//pinMode(7,INPUT)
-   Serial.writeln("wait for the first connect");
-   /*while(1){
-     state = digitalRead(STATE_PIN);
-     if(state == HIGH)
-       break;
-   }
-   Serial.writeln("connect over");*/
+//   bitSet(DDRD,ALARM_PIN);  //pinMode(4,OUTPUT);
+//   bitClear(DDRD,STATE_PIN);//pinMode(7,INPUT)
+
 }
 void loop()
 {/* Update all the values */
@@ -104,11 +99,9 @@ void loop()
 #ifdef RESTRICT_PITCH // Eq. 25 and 26
   double roll  = atan2(accY, accZ) * RAD_TO_DEG;
   double pitch = atan(-accX / sqrt(accY * accY + accZ * accZ)) * RAD_TO_DEG;
-  double yaw   = 0;
 #else // Eq. 28 and 29
   double roll  = atan(accY / sqrt(accX * accX + accZ * accZ)) * RAD_TO_DEG;
   double pitch = atan2(-accX, accZ) * RAD_TO_DEG;
-  double yaw   = 0;
 #endif
 
   double gyroXrate = gyroX / 131.0; // Convert to deg/s
@@ -145,9 +138,6 @@ void loop()
     gyroXrate = -gyroXrate; // Invert rate, so it fits the restriced accelerometer reading
   kalAngleX = kalmanX.getAngle(roll, gyroXrate, dt); // Calculate the angle using a Kalman filter
 #endif
-
-  kalAngleZ = kalmanZ.getAngle(yaw, gyroZrate, dt);
-  
   
   gyroXangle += gyroXrate * dt; // Calculate gyro angle without any filter
   gyroYangle += gyroYrate * dt;
@@ -164,57 +154,42 @@ void loop()
     gyroYangle = kalAngleY;
 
   /* Print Data */
-#if 0 // Set to 1 to activate
-  Serial.write(accX); Serial.write("\t");
-  Serial.write(accY); Serial.write("\t");
-  Serial.write(accZ); Serial.write("\t");
-
-  Serial.write(gyroX); Serial.write("\t");
-  Serial.write(gyroY); Serial.write("\t");
-  Serial.write(gyroZ); Serial.write("\t");
-
-  Serial.write("\t");
-#endif
-
-#if 0 // Set to 1 to print the temperature
-  Serial.write("\t");
-
-  double temperature = (double)tempRaw / 340.0 + 36.53;
-  Serial.write(temperature); Serial.write("\t");
-#endif
-
-  Serial.write("\r\n");
-  delay(2);
-
-  state = digitalRead(STATE_PIN);
-  if (1) //(state == LOW) 
-      Serial.write("a/g:\t");
-        //Serial.write(yaw); Serial.write("\t");
-        //Serial.write(pitch); Serial.write("\t");
-        //Serial.write(roll); Serial.write("\t");
-
-        Serial.write(gyroXrate); Serial.write("\t");
-        Serial.write(gyroYrate); Serial.write("\t");
-        Serial.write(gyroZrate); Serial.write("\t");
-        //Serial.write(kalmanZ.getRate() * dt); Serial.write("\t");
+  double seconds = timer/1000000.0;
+  //if (1) //(state == LOW) 
+        //SoftSerial.begin(9600); // begin communication
+        //mySerial.print("a/g:\t");
+      
+        mySerial.print(seconds); mySerial.print("\t");  
+        mySerial.print(accX); mySerial.print("\t");
+        mySerial.print(accY); mySerial.print("\t");
+        mySerial.print(accZ); mySerial.print("\t");
+        
+        //mySerial.print(gyroXrate); mySerial.print("\t");
+        //mySerial.print(gyroYrate); mySerial.print("\t");
+        //Serial.print(gyroZrate); Serial.print("\t");
         
         //double temperature = (double)tempRaw / 340.0 + 36.53;
-        //Serial.write(temperature); Serial.write("\t");
-        //Serial.write(dt); Serial.write("\t");
-        //Serial.write(gyroXangle); Serial.write("\t");
-        //Serial.write(compAngleX); Serial.write("\t");
-        //Serial.write(kalAngleX); Serial.write("\t");
+        //Serial.print(temperature); Serial.print("\t");
 
-        //Serial.write("\t");
-  
+        //mySerial.print(kalmanX.getRate()); mySerial.print("\t");
+        //mySerial.print(kalmanY.getRate()); mySerial.print("\t");
 
-        //Serial.write(gyroYangle); Serial.write("\t");
-         //Serial.write(compAngleY); Serial.write("\t");
-          //Serial.write(kalAngleY); Serial.write("\t");
-      //Serial.write(accX); Serial.write("\t");
-      //Serial.write(accY); Serial.write("\t");
-      //Serial.write(accZ); Serial.write("\t");
+        //Serial.print(yaw); Serial.print("\t");
+        //mySerial.print(pitch); mySerial.print("\t");
+        //Serial.print(roll); Serial.print("\t");
 
-      
+        //Serial.print(kalAngleX); Serial.print("\t");
+        //mySerial.print(kalAngleY); mySerial.print("\t");
+        
+        //Serial.print(dt); Serial.print("\t");
+        //Serial.print(gyroXangle); Serial.print("\t");
+        //Serial.print(compAngleX); Serial.print("\t");
+        //
+        
+        mySerial.print("\n");
+        //SoftSerial.end();
+        //Serial.print(gyroYangle); Serial.print("\t");
+         //Serial.print(compAngleY); Serial.print("\t");
+          
 }
 
