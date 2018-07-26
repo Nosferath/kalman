@@ -62,8 +62,8 @@ void setup(){
   double roll  = atan2(accY, accZ) * RAD_TO_DEG;
   double pitch = atan(-accX / sqrt(accY * accY + accZ * accZ)) * RAD_TO_DEG;
 #else // Eq. 28 and 29
-  double roll  = atan(accY / sqrt(accX * accX + accZ * accZ)) * RAD_TO_DEG;
-  double pitch = atan2(-accX, accZ) * RAD_TO_DEG;
+  double roll  = atan(accX / sqrt(accX * accX + accZ * accZ)) * RAD_TO_DEG;
+  double pitch = atan2(-accY, accZ) * RAD_TO_DEG;
 #endif
 
   kalmanX.setAngle(roll); // Set starting angle
@@ -100,8 +100,8 @@ void loop()
   double roll  = atan2(accY, accZ) * RAD_TO_DEG;
   double pitch = atan(-accX / sqrt(accY * accY + accZ * accZ)) * RAD_TO_DEG;
 #else // Eq. 28 and 29
-  double roll  = atan(accY / sqrt(accX * accX + accZ * accZ)) * RAD_TO_DEG;
-  double pitch = atan2(-accX, accZ) * RAD_TO_DEG;
+  double roll  = atan(accX / sqrt(accX * accX + accZ * accZ)) * RAD_TO_DEG;
+  double pitch = atan2(-accY, accZ) * RAD_TO_DEG;
 #endif
 
   double gyroXrate = gyroX / 131.0; // Convert to deg/s
@@ -125,12 +125,18 @@ void loop()
   
 #else
   // This fixes the transition problem when the accelerometer angle jumps between -180 and 180 degrees
-  if ((pitch < -90 && kalAngleY > 90) || (pitch > 90 && kalAngleY < -90)) {
-    kalmanY.setAngle(pitch);
-    compAngleY = pitch;
-    kalAngleY = pitch;
-    gyroYangle = pitch;
-  } 
+  //if ((pitch < -90 && kalAngleY > 90) || (pitch > 90 && kalAngleY < -90)) {
+  //  kalmanY.setAngle(pitch);
+  //  compAngleY = pitch;
+  //  kalAngleY = pitch;
+  //  gyroYangle = pitch;
+  //}
+  if (pitch < -90 && kalAngleY > 90) {
+    kalmanY.setAngle(kalmanY.getCurrentAngle()-360);
+    compAngleY = kalmanY.getCurrentAngle();
+    gyroYangle = kalmanY.getCurrentAngle();
+    kalAngleY = KalmanY.getAngle(pitch, giroYrate, dt);
+  }
   else
     kalAngleY = kalmanY.getAngle(pitch, gyroYrate, dt); // Calculate the angle using a Kalman filter
 

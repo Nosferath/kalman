@@ -80,6 +80,8 @@ float Kalman::getAngle(float newAngle, float newRate, float dt) {
     return angle;
 };
 
+float Kalman::getCurrentAngle() { return this->angle; };
+
 void Kalman::setAngle(float angle) { this->angle = angle; }; // Used to set angle, this should be set as the starting angle
 float Kalman::getRate() { return this->rate; }; // Return the unbiased rate
 
