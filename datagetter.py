@@ -17,7 +17,8 @@ class DataGetSerial:
     def set_up(self, port, n):
         self.n = n
         print("Conectando a puerto serial %s..."%(port))
-        self.serial = serial.Serial(port, 9600, timeout=0.01)
+        self.serial = serial.Serial(port, 9600, timeout=0.1)
+        #self.sio =  io.TextIOWrapper(io.BufferedRandom(self.serial), encoding='ascii')
         self.sio = io.TextIOWrapper(io.BufferedRWPair(self.serial, self.serial))
         print("Conectado!")
         
