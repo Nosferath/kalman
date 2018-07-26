@@ -136,7 +136,14 @@ void loop()
     compAngleY = kalmanY.getCurrentAngle();
     gyroYangle = kalmanY.getCurrentAngle();
     kalAngleY = kalmanY.getAngle(pitch, gyroYrate, dt);
+  }  
+  else if (pitch > 90 && kalAngleY < -90) {
+    kalmanY.setAngle(kalmanY.getCurrentAngle()+360);
+    compAngleY = kalmanY.getCurrentAngle();
+    gyroYangle = kalmanY.getCurrentAngle();
+    kalAngleY = kalmanY.getAngle(pitch, gyroYrate, dt);
   }
+  
   else
     kalAngleY = kalmanY.getAngle(pitch, gyroYrate, dt); // Calculate the angle using a Kalman filter
 
