@@ -5,7 +5,7 @@ import csv
 first = True
 datos = {}
 clases = []
-with open("data_semiseria_1.csv", 'r', newline='') as csvfile:
+with open("data_vgirofix_2.csv", 'r', newline='') as csvfile:
     csvreader = csv.reader(csvfile)
     for linea in csvreader:
         if first == True:

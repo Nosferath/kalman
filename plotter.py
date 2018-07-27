@@ -21,7 +21,7 @@ def init_list_of_objects(size):
         list_of_objects.append( list() ) #different object reference each time
     return list_of_objects
 
-n = 9
+n = 10
 dgs = DataGetSerial('COM5', n)
 plt.ion()
 y = init_list_of_objects(n)
@@ -46,8 +46,8 @@ def MakeFig():
 
 with open("data.csv", 'w', newline='') as csvfile:
     csvwriter = csv.writer(csvfile)
-    csvwriter.writerow(['Tiempo', 'AccX', 'AccY', 'AccZ', 'GiroY', 'KalmanGiroY',
-                        'Pitch', 'KalmanPitch', 'DMPPitch'])
+    csvwriter.writerow(['Tiempo', 'GiroX', 'GiroY', 'GiroZ', 'KalmanGiroY', 
+                        'GiroXAngle', 'GiroYAngle', 'Pitch', 'Roll', 'KalmanPitch'])
     while True:
         reading = dgs.get_next()
         print("THIS IS", reading)
