@@ -72,14 +72,18 @@ float    base_z_accel = 0;
 // Simple calibration - just average first few readings to subtract
 // from the later data
 void calibrate_gyro() {
-  int num_readings = 10;
+  float num_readings = 10;
 
   // Discard the first reading (don't know if this is needed or
   // not, however, it won't hurt.)
+  while (i2cRead(0x3B, i2cData, 14));
+  accX = (int16_t)((i2cData[0] << 8) | i2cData[1]);
+  accY = (int16_t)((i2cData[2] << 8) | i2cData[3]);
+  accZ = (int16_t)((i2cData[4] << 8) | i2cData[5]);
+  tempRaw = (int16_t)((i2cData[6] << 8) | i2cData[7]);
   gyroX = (int16_t)((i2cData[8] << 8) | i2cData[9]);
   gyroY = (int16_t)((i2cData[10] << 8) | i2cData[11]);
-  gyroZ = (int16_t)((i2cData[12] << 8) | i2cData[13]);;
-  
+  gyroZ = (int16_t)((i2cData[12] << 8) | i2cData[13]);
   // Read and average the raw values
   for (int i = 0; i < num_readings; i++) {
     gyroX = (int16_t)((i2cData[8] << 8) | i2cData[9]);
@@ -104,8 +108,6 @@ void dmpDataReady() {
     mpuInterrupt = true;
 }
 
-
-
 void setup(){  
    mySerial.begin(9600);
    Wire.begin();
@@ -115,19 +117,7 @@ void setup(){
   TWBR = ((F_CPU / 400000UL) - 16) / 2; // Set I2C frequency to 400kHz
 #endif
 
-  i2cData[0] = 7; // Set the sample rate to 1000Hz - 8kHz/(7+1) = 1000Hz
-  i2cData[1] = 0x00; // Disable FSYNC and set 260 Hz Acc filtering, 256 Hz Gyro filtering, 8 KHz sampling
-  i2cData[2] = 0x00; // Set Gyro Full Scale Range to ±250deg/s
-  i2cData[3] = 0x00; // Set Accelerometer Full Scale Range to ±2g
-  while (i2cWrite(0x19, i2cData, 4, false)); // Write to all four registers at once
-  while (i2cWrite(0x6B, 0x01, true)); // PLL with X axis gyroscope reference and disable sleep mode
-
-  while (i2cRead(0x75, i2cData, 1));
-  if (i2cData[0] != 0x68) { // Read "WHO_AM_I" register
-    mySerial.print(F("Error reading sensor"));
-    while (1);
-  }
-
+/*
 // ================================================================
 // ===                DMP                     ===
 // ================================================================
@@ -161,14 +151,22 @@ void setup(){
       mySerial.println(F(")"));
   }//*/
 
+  i2cData[0] = 7; // Set the sample rate to 1000Hz - 8kHz/(7+1) = 1000Hz
+  i2cData[1] = 0x00; // Disable FSYNC and set 260 Hz Acc filtering, 256 Hz Gyro filtering, 8 KHz sampling
+  i2cData[2] = 0x00; // Set Gyro Full Scale Range to ±250deg/s
+  i2cData[3] = 0x00; // Set Accelerometer Full Scale Range to ±2g
+  while (i2cWrite(0x19, i2cData, 4, false));; // Write to all four registers at once
+  while (i2cWrite(0x6B, 0x01, true));; // PLL with X axis gyroscope reference and disable sleep mode
 
+  while (i2cRead(0x75, i2cData, 1));
 
-  
+  if (i2cData[0] != 0x68) { // Read "WHO_AM_I" register
+    mySerial.print(F("Error reading sensor"));
+    while (1);
+  }
+
   delay(100); // Wait for sensor to stabilize
   
-  if (CALIBRATE_GYRO){
-    calibrate_gyro();
-  }
   /* Set kalman and gyro starting angle */
   while (i2cRead(0x3B, i2cData, 6));
   accX = (int16_t)((i2cData[0] << 8) | i2cData[1]);
@@ -192,11 +190,10 @@ void setup(){
   gyroYangle = pitch;
   compAngleX = roll;
   compAngleY = pitch;
-
   timer = micros();
-
-//   bitSet(DDRD,ALARM_PIN);  //pinMode(4,OUTPUT);
-//   bitClear(DDRD,STATE_PIN);//pinMode(7,INPUT)
+  if (CALIBRATE_GYRO){
+    calibrate_gyro();
+  }
 
 }
 void loop(){
@@ -248,13 +245,13 @@ void loop(){
   if (pitch < -90 && kalAngleY > 90) {
     kalmanY.setAngle(kalmanY.getCurrentAngle()-360);
     compAngleY = kalmanY.getCurrentAngle();
-    gyroYangle = kalmanY.getCurrentAngle();
+    //gyroXangle = kalmanY.getCurrentAngle();
     kalAngleY = kalmanY.getAngle(pitch, gyroXrate, dt);
   }  
   else if (pitch > 90 && kalAngleY < -90) {
     kalmanY.setAngle(kalmanY.getCurrentAngle()+360);
     compAngleY = kalmanY.getCurrentAngle();
-    gyroYangle = kalmanY.getCurrentAngle();
+    //gyroXangle = kalmanY.getCurrentAngle();
     kalAngleY = kalmanY.getAngle(pitch, gyroXrate, dt);
   }
   
@@ -275,8 +272,12 @@ void loop(){
   compAngleY = 0.93 * (compAngleY + gyroYrate * dt) + 0.07 * pitch;
 
   // Reset the gyro angle when it has drifted too much
-  if (gyroXangle < -180 || gyroXangle > 180)
-    gyroXangle = kalAngleX;
+  
+  if (gyroXangle < -180)
+    gyroXangle += 360;
+  else if (gyroXangle > 180)
+    gyroXangle -= 360;
+    
   if (gyroYangle < -180 || gyroYangle > 180)
     gyroYangle = kalAngleY;
 
@@ -288,46 +289,30 @@ void loop(){
     fifoCount = mpu.getFIFOCount();
 
     // check for overflow (this should never happen unless our code is too inefficient)
-    if ((mpuIntStatus & 0x10) || fifoCount == 1024) {
+    /*if ((mpuIntStatus & 0x10) || fifoCount == 1024) {
         // reset so we can continue cleanly
         mpu.resetFIFO();
         Serial.println(F("FIFO overflow!"));
 
     // otherwise, check for DMP data ready interrupt (this should happen frequently)
     } else if (mpuIntStatus & 0x02) {
-        // wait for correct available data length, should be a VERY short wait
-        while (fifoCount < packetSize) fifoCount = mpu.getFIFOCount();
-
-        // read a packet from FIFO
-        mpu.getFIFOBytes(fifoBuffer, packetSize);
-        
-        // track FIFO count here in case there is > 1 packet available
-        // (this lets us immediately read more without waiting for an interrupt)
-        fifoCount -= packetSize;
-        
-        // Obtain Euler angles from buffer
-        //mpu.dmpGetQuaternion(&q, fifoBuffer);
-        //mpu.dmpGetEuler(euler, &q);
-        
-        // Obtain YPR angles from buffer
-        mpu.dmpGetQuaternion(&q, fifoBuffer);
-        mpu.dmpGetGravity(&gravity, &q);
-        mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
-
-        /* Print Data */
+        // wait for correct available data length, should be a VERY short wait            
+    }
+  
+         /* Print Data */
   double seconds = timer/1000000.0;
   //if (1) //(state == LOW) 
         //SoftSerial.begin(9600); // begin communication
         //mySerial.print("a/g:\t");
       
         mySerial.print(seconds); mySerial.print("\t");  
-        mySerial.print(accX); mySerial.print("\t");
-        mySerial.print(accY); mySerial.print("\t");
-        mySerial.print(accZ); mySerial.print("\t");
+        //mySerial.print(accX); mySerial.print("\t");
+        //mySerial.print(accY); mySerial.print("\t");
+        //mySerial.print(accZ); mySerial.print("\t");
         
         mySerial.print(gyroXrate); mySerial.print("\t");
-        //mySerial.print(gyroYrate); mySerial.print("\t");
-        //mySerial.print(gyroZrate); Serial.print("\t");
+        mySerial.print(gyroYrate); mySerial.print("\t");
+        mySerial.print(gyroZrate); mySerial.print("\t");
         
         //double temperature = (double)tempRaw / 340.0 + 36.53;
         //Serial.print(temperature); Serial.print("\t");
@@ -335,29 +320,24 @@ void loop(){
         //mySerial.print(kalmanX.getRate()); mySerial.print("\t");
         mySerial.print(kalmanY.getRate()); mySerial.print("\t");
 
-        //Serial.print(yaw); Serial.print("\t");
-        mySerial.print(pitch); mySerial.print("\t");
-        //Serial.print(roll); Serial.print("\t");
+        mySerial.print(gyroXangle); mySerial.print("\t");
+        mySerial.print(gyroYangle); mySerial.print("\t");
 
-        //Serial.print(kalAngleX); Serial.print("\t");
+        mySerial.print(pitch); mySerial.print("\t");
+        mySerial.print(roll); mySerial.print("\t");
+
+        //mySerial.print(kalAngleX); mySerial.print("\t");
         mySerial.print(kalAngleY); mySerial.print("\t");
         
-        //Serial.print(dt); Serial.print("\t");
-        //Serial.print(gyroXangle); Serial.print("\t");
         //Serial.print(compAngleX); Serial.print("\t");
 
-       mySerial.print(ypr[2]* RAD_TO_DEG, 2); mySerial.print("\t");
+       //mySerial.print(ypr[0]* RAD_TO_DEG, 2); mySerial.print("\t");
        //mySerial.print(-ypr[1]* RAD_TO_DEG, 2); mySerial.print("\t");
-      // mySerial.println(ypr[0]* RAD_TO_DEG, 2); mySerial.print("\t");
-        
-        mySerial.print("\n");
-        //SoftSerial.end();
-        //Serial.print(gyroYangle); Serial.print("\t");
-         //Serial.print(compAngleY); Serial.print("\t");
+       //mySerial.print(ypr[2]* RAD_TO_DEG, 2); mySerial.print("\t");
 
-    }
-  
-  
+       //mySerial.print(base_z_gyro); mySerial.print("\t");
+       
+       mySerial.print("\n"); 
           
 }
 
