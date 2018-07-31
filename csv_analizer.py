@@ -2,13 +2,26 @@ import matplotlib.pyplot as plt
 #import numpy as np
 import csv
 
+gt_t = []
+gt_angulo =[]
+# gt_dt = 51.555 - 50.06 # caso rapido 171450
+gt_dt = 74.062 - 72.34 # caso lento 172312
+first = True
+with open("datos_172312", 'r', newline='') as gt_file:
+    gt_csv = csv.reader(gt_file)
+    for linea in gt_csv:
+        if first:
+            first = False
+        else:
+            gt_t.append(float(linea[0]) - gt_dt)
+            gt_angulo.append(-float(linea[1][:-1]))
 first = True
 datos = {}
 clases = []
-with open("data_vgirofix_2.csv", 'r', newline='') as csvfile:
+with open("data_FINAL_lento.csv", 'r', newline='') as csvfile:
     csvreader = csv.reader(csvfile)
     for linea in csvreader:
-        if first == True:
+        if first:
             for clase in linea:
                 datos[clase] = []
                 clases.append(clase)
@@ -53,5 +66,6 @@ while True:
                  [datos[item][i] for i in range(indices[0], indices[1]+1)],
                    colores[n], label=item)
         n += 1
+    #plt.plot(gt_t, gt_angulo, 'purple', label='Ground truth')
     plt.legend(loc='upper left')
     plt.show()
