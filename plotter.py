@@ -1,14 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Fri Jul 20 10:42:36 2018
 
-@author: Suri
-NEcesito:
-    RPI con pines soldados
-    Todos los relojes
-    Todas las MicroSD
-    Lector de escritorio
-"""
 from datagetter import DataGetSerial
 import matplotlib.pyplot as plt
 import numpy as np
@@ -46,8 +37,8 @@ def MakeFig():
 
 with open("data.csv", 'w', newline='') as csvfile:
     csvwriter = csv.writer(csvfile)
-    csvwriter.writerow(['Tiempo', 'GiroX', 'GiroY', 'GiroZ', 'KalmanGiroY', 
-                        'GiroXAngle', 'GiroYAngle', 'Pitch', 'Roll', 'KalmanPitch'])
+    csvwriter.writerow(['Tiempo', 'GiroX', 'GiroY', 'GiroZ', 'KalmanGiroX', 
+                        'GiroXAngle', 'GiroYAngle', 'Roll', 'Pitch', 'KalmanRoll'])
     while True:
         reading = dgs.get_next()
         print("THIS IS", reading)

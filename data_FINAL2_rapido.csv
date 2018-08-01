@@ -1,4 +1,4 @@
-Tiempo,GiroX,GiroY,GiroZ,KalmanGiroY,GiroXAngle,GiroYAngle,Pitch,Roll,KalmanPitch
+Tiempo,GiroX,GiroY,GiroZ,KalmanGiroX,GiroXAngle,GiroYAngle,Roll,Pitch,KalmanRoll
 24.93,-0.2,-0.18,-0.05,-0.12,0.22,-3.25,-0.02,1.28,0.0
 24.99,-0.05,0.05,-0.15,0.03,0.21,-3.25,0.06,1.13,0.01
 25.06,0.08,-0.05,-0.1,0.16,0.22,-3.25,-0.15,1.28,0.0
