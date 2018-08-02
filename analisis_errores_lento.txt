@@ -1,0 +1,168 @@
+
+####### ANALISIS VUELTA 0 #######
+Error absoluto de Roll: 1.7897880503266796
+Desviacion estandar de error de Roll: 1.1321983224954533
+MSE de Roll: 4.485214306553695
+
+Error absoluto de GiroXAngle: 9.96930194529717
+Desviacion estandar de error de GiroXAngle: 2.461971691500408
+MSE de GiroXAngle: 105.4482858862553
+
+Error absoluto de KalmanRoll: 2.3157115894404328
+Desviacion estandar de error de KalmanRoll: 1.4069721986733326
+MSE de KalmanRoll: 7.342090933308406
+
+
+####### ANALISIS VUELTA 1 #######
+Error absoluto de Roll: 1.356958835987934
+Desviacion estandar de error de Roll: 1.03759353610641
+MSE de Roll: 2.9179376287355328
+
+Error absoluto de GiroXAngle: 8.547205950407298
+Desviacion estandar de error de GiroXAngle: 2.8503352900767824
+MSE de GiroXAngle: 81.17914082453505
+
+Error absoluto de KalmanRoll: 2.003051215629247
+Desviacion estandar de error de KalmanRoll: 1.089290978924515
+MSE de KalmanRoll: 5.198769009200133
+
+
+####### ANALISIS VUELTA 2 #######
+Error absoluto de Roll: 1.6752016746465603
+Desviacion estandar de error de Roll: 1.162770407220774
+MSE de Roll: 4.158335670647004
+
+Error absoluto de GiroXAngle: 8.230376697517995
+Desviacion estandar de error de GiroXAngle: 2.6672322529368104
+MSE de GiroXAngle: 74.8532284741536
+
+Error absoluto de KalmanRoll: 2.04629424588757
+Desviacion estandar de error de KalmanRoll: 1.3317841768150094
+MSE de KalmanRoll: 5.960969234367411
+
+
+####### ANALISIS VUELTA 3 #######
+Error absoluto de Roll: 1.3671335426458218
+Desviacion estandar de error de Roll: 0.9200341235942303
+MSE de Roll: 2.7155169120051177
+
+Error absoluto de GiroXAngle: 7.544471612966923
+Desviacion estandar de error de GiroXAngle: 2.783047385146851
+MSE de GiroXAngle: 64.66440466683645
+
+Error absoluto de KalmanRoll: 2.0164943914393545
+Desviacion estandar de error de KalmanRoll: 0.8591795897815971
+MSE de KalmanRoll: 4.804439198203646
+
+
+####### ANALISIS VUELTA 4 #######
+Error absoluto de Roll: 1.133105076664474
+Desviacion estandar de error de Roll: 0.872501946060279
+MSE de Roll: 2.0451867606417777
+
+Error absoluto de GiroXAngle: 5.796552547931793
+Desviacion estandar de error de GiroXAngle: 16.919847285729816
+MSE de GiroXAngle: 319.8812536133532
+
+Error absoluto de KalmanRoll: 1.6225000241291632
+Desviacion estandar de error de KalmanRoll: 0.8372899769328253
+MSE de KalmanRoll: 3.333560833771306
+
+
+####### ANALISIS VUELTA 5 #######
+Error absoluto de Roll: 1.7938382176149552
+Desviacion estandar de error de Roll: 1.005925928536031
+MSE de Roll: 4.229742524677076
+
+Error absoluto de GiroXAngle: 1.622876703900909
+Desviacion estandar de error de GiroXAngle: 1.102656752117884
+MSE de GiroXAngle: 3.8495807090554397
+
+Error absoluto de KalmanRoll: 2.0521402508840065
+Desviacion estandar de error de KalmanRoll: 1.2323711277182683
+MSE de KalmanRoll: 5.730018205731869
+
+
+####### ANALISIS VUELTA 6 #######
+Error absoluto de Roll: 1.7636200639489101
+Desviacion estandar de error de Roll: 0.9395795779418525
+MSE de Roll: 3.9931655132485475
+
+Error absoluto de GiroXAngle: 1.8815964830550564
+Desviacion estandar de error de GiroXAngle: 1.4506020030847073
+MSE de GiroXAngle: 5.644651496398523
+
+Error absoluto de KalmanRoll: 2.0117639428418714
+Desviacion estandar de error de KalmanRoll: 0.9310714984859981
+MSE de KalmanRoll: 4.914088297011635
+
+
+####### ANALISIS VUELTA 7 #######
+Error absoluto de Roll: 2.2582024440381363
+Desviacion estandar de error de Roll: 1.2283748579468792
+MSE de Roll: 6.608383069895828
+
+Error absoluto de GiroXAngle: 3.6794193478718817
+Desviacion estandar de error de GiroXAngle: 16.334083152990942
+MSE de GiroXAngle: 280.3403991863164
+
+Error absoluto de KalmanRoll: 2.5676528223346566
+Desviacion estandar de error de KalmanRoll: 1.2171618616673658
+MSE de KalmanRoll: 8.074324013540696
+
+
+####### ANALISIS VUELTA 8 #######
+Error absoluto de Roll: 1.8870286529027422
+Desviacion estandar de error de Roll: 1.3226631028191487
+MSE de Roll: 5.3103148204351145
+
+Error absoluto de GiroXAngle: 6.568317165151653
+Desviacion estandar de error de GiroXAngle: 29.800254879383925
+MSE de GiroXAngle: 931.1979812582714
+
+Error absoluto de KalmanRoll: 2.178652382170907
+Desviacion estandar de error de KalmanRoll: 1.372462403314628
+MSE de KalmanRoll: 6.630179250851131
+
+
+####### ANALISIS VUELTA 9 #######
+Error absoluto de Roll: 2.0644076093139834
+Desviacion estandar de error de Roll: 1.5098919753532811
+MSE de Roll: 6.5415525546297095
+
+Error absoluto de GiroXAngle: 8.609587034512522
+Desviacion estandar de error de GiroXAngle: 38.98161320541461
+MSE de GiroXAngle: 1593.6911570014008
+
+Error absoluto de KalmanRoll: 2.3581591245593567
+Desviacion estandar de error de KalmanRoll: 1.5930500871799191
+MSE de KalmanRoll: 8.098723037006499
+
+
+####### ANALISIS VUELTA 10 #######
+Error absoluto de Roll: 2.0214406663161104
+Desviacion estandar de error de Roll: 1.490188281804246
+MSE de Roll: 6.3068834826632125
+
+Error absoluto de GiroXAngle: 7.333966713985445
+Desviacion estandar de error de GiroXAngle: 29.364082928708903
+MSE de GiroXAngle: 916.0364340059402
+
+Error absoluto de KalmanRoll: 2.282988374055645
+Desviacion estandar de error de KalmanRoll: 1.5048342902575444
+MSE de KalmanRoll: 7.476562157208165
+
+
+####### ANALISIS VUELTA 11 #######
+Error absoluto de Roll: 1.9281717875158932
+Desviacion estandar de error de Roll: 0.9036199492775054
+MSE de Roll: 4.534375454904517
+
+Error absoluto de GiroXAngle: 10.929761716255792
+Desviacion estandar de error de GiroXAngle: 39.838060472820764
+MSE de GiroXAngle: 1706.5307534102546
+
+Error absoluto de KalmanRoll: 2.2830036073990128
+Desviacion estandar de error de KalmanRoll: 1.0776981265040577
+MSE de KalmanRoll: 6.373538723267261
+
